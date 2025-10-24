@@ -1,26 +1,26 @@
-const http = require('http');
+// echo_server.js
+const net = require('net');
 
-const hostname = '0.0.0.0'; // Listen on all network interfaces
-const port = process.env.PORT || 3000;
+const PORT = 8080;
+const HOST = '0.0.0.0';
 
-const server = http.createServer((req, res) => {
-    console.log(`Received request: ${req.method} ${req.url}`);
+const server = net.createServer((socket) => {
+  console.log(`Client connected: ${socket.remoteAddress}:${socket.remotePort}`);
 
-    // Set a 200 OK status and JSON content type
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'application/json');
+  socket.on('data', (data) => {
+    console.log(`Received: ${data.toString().trim()}`);
+    socket.write(`Echo: ${data}`);
+  });
 
-    // Create a simple JSON response
-    const response = {
-        message: 'Hello from Node.js HTTP Server!',
-        path: req.url,
-        method: req.method
-    };
+  socket.on('close', () => {
+    console.log(`Client disconnected: ${socket.remoteAddress}:${socket.remotePort}`);
+  });
 
-    // Send the response
-    res.end(JSON.stringify(response));
+  socket.on('error', (err) => {
+    console.error(`Socket error: ${err.message}`);
+  });
 });
 
-server.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname}:${port}/`);
+server.listen(PORT, HOST, () => {
+  console.log(`Echo server listening on ${HOST}:${PORT}`);
 });
