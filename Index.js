@@ -12,13 +12,15 @@ app.use(express.text({ type: '*/*', limit: '1mb' }));
 
 // Health / sanity endpoint
 app.get('/', (req, res) => {
+  // Try to be smart about what the client sent
+  let body = req.body;
+
+  // express.text() will give you a string, but express.json() / urlencoded()
+  // will give you an object. Both are fine. We'll return it as-is.
   res.json({
-    status: 'ok',
-    message: 'Echo server is running',
-    usage: {
-      GET_echo: '/echo?msg=hello',
-      POST_echo: '/echo  (send JSON, text, or form data)',
-    },
+    you_sent: body,
+    method: 'POST',
+    headers: req.headers,
   });
 });
 
