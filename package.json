@@ -2,9 +2,9 @@
   "name": "render-echo-server",
   "version": "1.0.0",
   "description": "Simple echo server for Render",
-  "main": "server.js",
+  "main": "Index.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node Index.js"
   },
   "dependencies": {
     "express": "^4.19.2"
