@@ -1,23 +1,12 @@
 {
-  "name": "http-testing",
+  "name": "render-echo-server",
   "version": "1.0.0",
-  "description": "",
-  "main": "Index.js",
+  "description": "Simple echo server for Render",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/audiblemaple/HTTP-testing.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/audiblemaple/HTTP-testing/issues"
-  },
-  "homepage": "https://github.com/audiblemaple/HTTP-testing#readme",
   "dependencies": {
-    "http": "^0.0.1-security"
+    "express": "^4.19.2"
   }
 }
