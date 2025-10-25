@@ -15,6 +15,8 @@ app.get('/', (req, res) => {
   // Try to be smart about what the client sent
   let body = req.body;
 
+  console.log(req.body);
+
   // express.text() will give you a string, but express.json() / urlencoded()
   // will give you an object. Both are fine. We'll return it as-is.
   res.json({
