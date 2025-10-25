@@ -1,8 +1,6 @@
-// server.js
 const express = require('express');
 const app = express();
 
-// Render will inject PORT into the env. Fallback is helpful for local dev.
 const PORT = process.env.PORT || 3000;
 
 // Accept JSON, text, or form data
@@ -10,15 +8,20 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.text({ type: '*/*', limit: '1mb' }));
 
+// Middleware to log full request details
+app.use((req, res, next) => {
+  console.log('--- Incoming Request ---');
+  console.log(`Method: ${req.method}`);
+  console.log(`URL: ${req.originalUrl}`);
+  console.log('Headers:', req.headers);
+  console.log('Body:', req.body);
+  console.log('------------------------\n');
+  next();
+});
+
 // Health / sanity endpoint
 app.get('/', (req, res) => {
-  // Try to be smart about what the client sent
   let body = req.body;
-
-  console.log(req.body);
-
-  // express.text() will give you a string, but express.json() / urlencoded()
-  // will give you an object. Both are fine. We'll return it as-is.
   res.json({
     you_sent: body,
     method: 'POST',
@@ -26,8 +29,6 @@ app.get('/', (req, res) => {
   });
 });
 
-// Echo via GET:
-//   /echo?msg=hello
 app.get('/echo', (req, res) => {
   const { msg } = req.query;
   res.json({
@@ -36,16 +37,8 @@ app.get('/echo', (req, res) => {
   });
 });
 
-// Echo via POST:
-// - If you send JSON:    { "foo": 123 }
-// - If you send text:    "hello world"
-// - If you send form:    foo=123&bar=ok
 app.post('/echo', (req, res) => {
-  // Try to be smart about what the client sent
   let body = req.body;
-
-  // express.text() will give you a string, but express.json() / urlencoded()
-  // will give you an object. Both are fine. We'll return it as-is.
   res.json({
     you_sent: body,
     method: 'POST',
@@ -53,7 +46,6 @@ app.post('/echo', (req, res) => {
   });
 });
 
-// Basic 404 handler (nice to have so Render doesn't think it's crashing)
 app.use((req, res) => {
   res.status(404).json({
     error: 'Not found',
@@ -61,7 +53,6 @@ app.use((req, res) => {
   });
 });
 
-// Start server
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Echo server listening on port ${PORT}`);
 });
