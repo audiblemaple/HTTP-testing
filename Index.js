@@ -101,17 +101,27 @@ app.get('/', (req, res) => {
 
 // Ingest
 app.post('/api/v1/ingest', requireAuth, async (req, res) => {
+  console.log("[INGEST] Received request");
+  console.log("Headers:", req.headers);
+  console.log("Body:", req.body);
+
   const { record, error } = normalizeRecord(req.body);
+
   if (error) {
+    console.log("[INGEST] Invalid record:", error);
     return res.status(400).json({ ok: false, error });
   }
 
+  console.log("[INGEST] Normalized record:", record);
+
   try {
     const docRef = await locationsColl.add(record);
-    return res.json({ ok: true, id: docRef.id });
+    console.log("[INGEST] Stored document in Firestore:", docRef.id);
+    res.json({ ok: true, id: docRef.id });
+    console.log("[INGEST] Response sent for device:", record.deviceId);
   } catch (err) {
-    console.error('Firestore write failed:', err);
-    return res.status(500).json({ ok: false, error: 'DB insert failed' });
+    console.error("[INGEST] Firestore write failed:", err);
+    res.status(500).json({ ok: false, error: "DB insert failed" });
   }
 });
 
