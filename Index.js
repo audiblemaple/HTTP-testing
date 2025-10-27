@@ -1,19 +1,15 @@
 const express = require('express');
+const cors = require('cors');
 const admin = require('firebase-admin');
 
 const app = express();
 
 // -------------------- CONFIG --------------------
-
-// AUTH_TOKEN protects /api/v1/ingest.
 const AUTH_TOKEN = process.env.AUTH_TOKEN || "dev-secret-token-change-me";
 const PORT = process.env.PORT || 3000;
-
-// SERVICE_ACCOUNT is a JSON string stored in Render env var.
-// We'll parse it here at runtime.
 const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT;
 
-// Parse once at boot
+// parse the service account
 let serviceAccount;
 try {
   serviceAccount = JSON.parse(serviceAccountJson);
@@ -22,31 +18,33 @@ try {
   process.exit(1);
 }
 
-// -------------------- FIREBASE INIT --------------------
-
-// Note: private_key in service accounts contains literal "\n" in env vars.
-// Firebase Admin SDK needs real newlines.
-// We'll fix that before passing it in.
+// fix \n in private key
 if (serviceAccount.private_key) {
   serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
 }
 
+// init firebase admin
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
 }
-
 const db = admin.firestore();
 const locationsColl = db.collection('locations');
+
+// ---------- MIDDLEWARE ----------
+
+// Allow cross-origin reads from anywhere (map viewer, local file, etc.)
+app.use(cors({
+  origin: '*',            // allow all origins to GET your data
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'X-Auth'],
+}));
 
 app.use(express.json({ limit: '1mb' }));
 
 function requireAuth(req, res, next) {
   const headerToken = req.get('X-Auth');
-  console.log(headerToken);
-  console.log(AUTH_TOKEN);
-
   if (!headerToken || headerToken !== AUTH_TOKEN) {
     return res.status(401).json({ ok: false, error: 'unauthorized' });
   }
