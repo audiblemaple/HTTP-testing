@@ -43,10 +43,13 @@ const locationsColl = db.collection('locations');
 app.use(express.json({ limit: '1mb' }));
 
 function requireAuth(req, res, next) {
-  // const headerToken = req.get('X-Auth');
-  // if (!headerToken || headerToken !== AUTH_TOKEN) {
-  //   return res.status(401).json({ ok: false, error: 'unauthorized' });
-  // }
+  const headerToken = req.get('X-Auth');
+  console.log(headerToken);
+  console.log(AUTH_TOKEN);
+
+  if (!headerToken || headerToken !== AUTH_TOKEN) {
+    return res.status(401).json({ ok: false, error: 'unauthorized' });
+  }
   next();
 }
 
