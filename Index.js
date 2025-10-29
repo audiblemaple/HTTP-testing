@@ -125,6 +125,26 @@ app.post('/api/v1/ingest', requireAuth, async (req, res) => {
   }
 });
 
+// Unique device IDs
+app.get('/api/v1/devices', async (req, res) => {
+  try {
+    const snap = await locationsColl.get();
+    const ids = new Set();
+
+    snap.forEach(doc => {
+      const data = doc.data();
+      if (data.deviceId) {
+        ids.add(data.deviceId);
+      }
+    });
+
+    return res.json({ ok: true, data: Array.from(ids) });
+  } catch (err) {
+    console.error('Firestore query failed:', err);
+    return res.status(500).json({ ok: false, error: 'DB query failed' });
+  }
+});
+
 // Last point
 app.get('/api/v1/last', async (req, res) => {
   const { deviceId } = req.query;
