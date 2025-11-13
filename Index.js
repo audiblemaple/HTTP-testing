@@ -65,6 +65,7 @@ function normalizeRecord(body) {
     cpuTemp,
     ambientTemp,
     timeStamp,
+    UpTime,
   } = body || {};
 
   if (!deviceId || !messageUUID || Latitude === undefined || Longitude === undefined) {
@@ -90,6 +91,7 @@ function normalizeRecord(body) {
       cpuTemp: cpuTemp !== undefined ? String(cpuTemp) : null,
       ambientTemp: ambientTemp !== undefined ? String(ambientTemp) : null,
       timeStamp: timeStamp ? new Date(timeStamp).toISOString() : null,
+      UpTime: UpTime,
       serverReceivedAt: new Date().toISOString(),
       raw: body,
     }
